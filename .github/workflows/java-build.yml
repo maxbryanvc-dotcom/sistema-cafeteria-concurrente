@@ -1,0 +1,38 @@
+name: Validación Java del Sistema Cafetería
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  compilar-y-ejecutar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Mostrar versión de Java
+        run: java -version
+
+      - name: Compilar proyecto
+        run: javac -d out src/*.java
+
+      - name: Ejecutar sistema
+        run: java -cp out SistemaCafeteria
+
+      - name: Validar salida del sistema
+        run: |
+          java -cp out SistemaCafeteria > resultado.txt
+          cat resultado.txt
+          grep "Pedido confirmado" resultado.txt
+          grep "Pedido rechazado" resultado.txt
+          grep "No hay más pedidos por procesar" resultado.txt
