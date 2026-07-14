@@ -3,22 +3,27 @@ import java.util.concurrent.BlockingQueue;
 // Clase que consume pedidos desde la cola y los procesa
 public class ConsumidorPedidos implements Runnable {
 
-    // Cola compartida del sistema
     private BlockingQueue<Pedido> colaPedidos;
-
-    // Servicio de stock
     private ServicioStock servicioStock;
-
-    // Métricas del sistema
     private MetricasSistema metricas;
+    private String nombreConsumidor;
 
-    // Constructor
+    // Constructor compatible con la versión anterior
     public ConsumidorPedidos(BlockingQueue<Pedido> colaPedidos,
                              ServicioStock servicioStock,
                              MetricasSistema metricas) {
+        this(colaPedidos, servicioStock, metricas, "Consumidor");
+    }
+
+    // Constructor para identificar consumidores diferentes
+    public ConsumidorPedidos(BlockingQueue<Pedido> colaPedidos,
+                             ServicioStock servicioStock,
+                             MetricasSistema metricas,
+                             String nombreConsumidor) {
         this.colaPedidos = colaPedidos;
         this.servicioStock = servicioStock;
         this.metricas = metricas;
+        this.nombreConsumidor = nombreConsumidor;
     }
 
     @Override
@@ -26,16 +31,17 @@ public class ConsumidorPedidos implements Runnable {
         try {
             boolean continuar = true;
 
-            // El consumidor sigue activo mientras haya pedidos
             while (continuar) {
 
-                // Espera hasta que exista un pedido disponible
+                metricas.actualizarPedidosEnCola(colaPedidos.size());
+
                 Pedido pedido = colaPedidos.take();
 
-                // Pedido especial para finalizar
+                metricas.actualizarPedidosEnCola(colaPedidos.size());
+
                 if (pedido.getId() == 0) {
                     continuar = false;
-                    System.out.println("No hay más pedidos por procesar");
+                    System.out.println(nombreConsumidor + ": No hay más pedidos por procesar");
                 } else {
                     procesarPedido(pedido);
                 }
@@ -46,23 +52,21 @@ public class ConsumidorPedidos implements Runnable {
         }
     }
 
-    // Procesa un pedido normal
     private void procesarPedido(Pedido pedido) {
 
-        System.out.println("Procesando pedido "
+        System.out.println(nombreConsumidor
+                + " procesando pedido "
                 + pedido.getId()
                 + " de "
                 + pedido.getCliente()
                 + ": "
                 + pedido.getProducto());
 
-        // Incrementa el total de pedidos procesados
         metricas.incrementarPedidosTotales();
+        metricas.incrementarPedidosPorConsumidor(nombreConsumidor);
 
-        // Intenta descontar stock
         boolean stockDisponible = servicioStock.descontarStock(pedido.getProducto());
 
-        // Si hay stock, confirma el pedido
         if (stockDisponible) {
             metricas.incrementarPedidosConfirmados();
 
