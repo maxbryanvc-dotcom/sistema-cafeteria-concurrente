@@ -66,6 +66,7 @@ public class SistemaCafeteria {
         servidorMetricas.start();
 
         Thread productorVariable = new Thread(new ProductorPedidosVariable(colaPedidos), "Productor variable");
+        Thread repositorStock = new Thread(new RepositorStock(servicioStock), "Repositor de stock");
 
         List<Thread> consumidores = new ArrayList<>();
 
@@ -79,6 +80,7 @@ public class SistemaCafeteria {
         }
 
         productorVariable.start();
+        repositorStock.start();
 
         for (Thread consumidor : consumidores) {
             consumidor.start();
@@ -92,6 +94,7 @@ public class SistemaCafeteria {
         scanner.nextLine();
 
         productorVariable.interrupt();
+        repositorStock.interrupt();
 
         for (Thread consumidor : consumidores) {
             consumidor.interrupt();

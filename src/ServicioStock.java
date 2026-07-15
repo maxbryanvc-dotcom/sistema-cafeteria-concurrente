@@ -15,14 +15,14 @@ public class ServicioStock {
         this.metricas = metricas;
 
         // Carga productos iniciales
-        productos.put("Empanada", new Producto("Empanada", 2));
-        productos.put("Jugo", new Producto("Jugo", 1));
-        productos.put("Pan con pollo", new Producto("Pan con pollo", 1));
+        productos.put("Empanada", new Producto("Empanada", 10));
+        productos.put("Jugo", new Producto("Jugo", 8));
+        productos.put("Pan con pollo", new Producto("Pan con pollo", 6));
 
         // Registra stock inicial en métricas
-        metricas.registrarStockInicial("Empanada", 2);
-        metricas.registrarStockInicial("Jugo", 1);
-        metricas.registrarStockInicial("Pan con pollo", 1);
+        metricas.registrarStockInicial("Empanada", 10);
+        metricas.registrarStockInicial("Jugo", 8);
+        metricas.registrarStockInicial("Pan con pollo", 6);
     }
 
     // Método sincronizado para evitar conflictos en el stock
@@ -55,5 +55,23 @@ public class ServicioStock {
         // Si no hay stock, rechaza el pedido
         System.out.println("Sin stock disponible para: " + nombreProducto);
         return false;
+    }
+
+    // Repone stock de un producto de forma sincronizada
+    public synchronized void reponerStock(String nombreProducto, int cantidad) {
+
+        Producto producto = productos.get(nombreProducto);
+
+        if (producto != null) {
+            producto.aumentarStock(cantidad);
+            metricas.actualizarStock(nombreProducto, producto.getStock());
+
+            System.out.println("Reposición de stock: "
+                    + nombreProducto
+                    + " +"
+                    + cantidad
+                    + " | Stock actual: "
+                    + producto.getStock());
+        }
     }
 }

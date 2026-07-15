@@ -27,4 +27,9 @@ public class Producto {
     public void descontarUno() {
         stock--;
     }
+
+    // Aumenta el stock disponible
+    public void aumentarStock(int cantidad) {
+        stock += cantidad;
+    }
 }
