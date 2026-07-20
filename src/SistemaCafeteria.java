@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,8 +48,7 @@ public class SistemaCafeteria {
 
             if (modoMonitor) {
                 System.out.println("Monitoreo activo. Presione ENTER para cerrar el sistema.");
-                Scanner scanner = new Scanner(System.in);
-                scanner.nextLine();
+                esperarCierre();
             }
 
         } catch (InterruptedException e) {
@@ -90,8 +90,7 @@ public class SistemaCafeteria {
         System.out.println("Métricas disponibles en http://localhost:8081/metrics");
         System.out.println("Presione ENTER para cerrar la simulación.");
 
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+        esperarCierre();
 
         productorVariable.interrupt();
         repositorStock.interrupt();
@@ -101,5 +100,24 @@ public class SistemaCafeteria {
         }
 
         System.out.println("Simulación finalizada.");
+    }
+
+    // Espera el ENTER del usuario para cerrar. Si la terminal no tiene
+    // entrada interactiva disponible (por ejemplo, al ejecutarse desde
+    // ciertos entornos de VS Code), evita que el programa se cierre con
+    // una excepción y lo deja activo hasta que se detenga con CTRL+C.
+    private static void esperarCierre() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
+        } catch (NoSuchElementException e) {
+            System.out.println("No se detectó entrada de teclado en esta terminal.");
+            System.out.println("Presione CTRL+C para finalizar.");
+            try {
+                Thread.currentThread().join();
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }
