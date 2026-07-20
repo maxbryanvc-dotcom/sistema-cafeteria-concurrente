@@ -62,7 +62,7 @@ public class ConsumidorPedidos implements Runnable {
                 + ": "
                 + pedido.getProducto());
 
-        // Simula tiempo real de preparación del pedido.
+        // CASO 4 + condición obligatoria: simula tiempo real de preparación.
         // Con el productor generando cada 300 ms y 3 consumidores tardando
         // ~1s cada uno, la generación supera a la capacidad de procesamiento
         // y la cola (cafeteria_pedidos_en_cola) crece de forma sostenida.
@@ -72,6 +72,8 @@ public class ConsumidorPedidos implements Runnable {
             Thread.currentThread().interrupt();
         }
 
+        // CASO 4: se cuenta como "procesado" recién aquí, cuando el
+        // consumidor ya sacó el pedido de la cola y lo está atendiendo
         metricas.incrementarPedidosTotales();
         metricas.incrementarPedidosPorConsumidor(nombreConsumidor);
 
