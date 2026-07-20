@@ -38,7 +38,7 @@ public class MetricasSistema {
         pedidosEnCola.set(cantidad);
     }
 
-    // CASO 4: cuenta cada pedido que el productor variable coloca en la cola
+    // CASO 4 → contador nuevo
     public void incrementarPedidosGenerados() {
         pedidosGenerados.incrementAndGet();
     }
@@ -64,12 +64,12 @@ public class MetricasSistema {
         sb.append("# TYPE cafeteria_pedidos_rechazados counter\n");
         sb.append("cafeteria_pedidos_rechazados ").append(pedidosRechazados.get()).append("\n\n");
 
-        // Condición obligatoria del examen: debe ser mayor que cero
+        // Obligatoria → debe salir mayor que cero
         sb.append("# HELP cafeteria_pedidos_en_cola Cantidad actual de pedidos pendientes en cola\n");
         sb.append("# TYPE cafeteria_pedidos_en_cola gauge\n");
         sb.append("cafeteria_pedidos_en_cola ").append(pedidosEnCola.get()).append("\n\n");
 
-        // CASO 4: métrica nueva asignada
+        // CASO 4 → línea nueva que se ve en /metrics
         sb.append("# HELP cafeteria_pedidos_generados Total de pedidos generados por el productor variable\n");
         sb.append("# TYPE cafeteria_pedidos_generados counter\n");
         sb.append("cafeteria_pedidos_generados ").append(pedidosGenerados.get()).append("\n\n");

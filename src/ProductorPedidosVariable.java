@@ -34,8 +34,7 @@ public class ProductorPedidosVariable implements Runnable {
                 Pedido pedido = new Pedido(contadorPedidos, cliente, producto);
                 colaPedidos.put(pedido);
 
-                // CASO 4: se cuenta como "generado" apenas entra a la cola,
-                // sin importar si un consumidor ya lo procesó o no
+                // CASO 4 → aquí se cuenta un pedido "generado"
                 metricas.incrementarPedidosGenerados();
 
                 System.out.println("Pedido variable "
@@ -47,9 +46,7 @@ public class ProductorPedidosVariable implements Runnable {
 
                 contadorPedidos++;
 
-                // CASO 4 + condición obligatoria: generación acelerada (300 ms)
-                // para que el productor supere la capacidad de los consumidores
-                // y cafeteria_pedidos_en_cola se mantenga mayor que cero
+                // Obligatoria → genero rápido (300ms) para que la cola crezca
                 Thread.sleep(300);
             }
 
