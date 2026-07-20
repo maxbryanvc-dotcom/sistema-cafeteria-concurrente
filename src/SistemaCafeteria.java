@@ -65,7 +65,7 @@ public class SistemaCafeteria {
         servidorMetricas.setDaemon(true);
         servidorMetricas.start();
 
-        Thread productorVariable = new Thread(new ProductorPedidosVariable(colaPedidos), "Productor variable");
+        Thread productorVariable = new Thread(new ProductorPedidosVariable(colaPedidos, metricas), "Productor variable");
         Thread repositorStock = new Thread(new RepositorStock(servicioStock), "Repositor de stock");
 
         List<Thread> consumidores = new ArrayList<>();

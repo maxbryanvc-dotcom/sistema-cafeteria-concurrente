@@ -9,6 +9,7 @@ public class MetricasSistema {
     private AtomicInteger pedidosConfirmados = new AtomicInteger(0);
     private AtomicInteger pedidosRechazados = new AtomicInteger(0);
     private AtomicInteger pedidosEnCola = new AtomicInteger(0);
+    private AtomicInteger pedidosGenerados = new AtomicInteger(0);
 
     private Map<String, AtomicInteger> stockPorProducto = new ConcurrentHashMap<>();
     private Map<String, AtomicInteger> pedidosPorConsumidor = new ConcurrentHashMap<>();
@@ -37,6 +38,11 @@ public class MetricasSistema {
         pedidosEnCola.set(cantidad);
     }
 
+    // Cuenta cada pedido que el productor variable coloca en la cola
+    public void incrementarPedidosGenerados() {
+        pedidosGenerados.incrementAndGet();
+    }
+
     public void incrementarPedidosPorConsumidor(String consumidor) {
         pedidosPorConsumidor
                 .computeIfAbsent(consumidor, k -> new AtomicInteger(0))
@@ -61,6 +67,10 @@ public class MetricasSistema {
         sb.append("# HELP cafeteria_pedidos_en_cola Cantidad actual de pedidos pendientes en cola\n");
         sb.append("# TYPE cafeteria_pedidos_en_cola gauge\n");
         sb.append("cafeteria_pedidos_en_cola ").append(pedidosEnCola.get()).append("\n\n");
+
+        sb.append("# HELP cafeteria_pedidos_generados Total de pedidos generados por el productor variable\n");
+        sb.append("# TYPE cafeteria_pedidos_generados counter\n");
+        sb.append("cafeteria_pedidos_generados ").append(pedidosGenerados.get()).append("\n\n");
 
         sb.append("# HELP cafeteria_stock_actual Stock actual por producto\n");
         sb.append("# TYPE cafeteria_stock_actual gauge\n");

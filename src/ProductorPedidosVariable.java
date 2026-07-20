@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 public class ProductorPedidosVariable implements Runnable {
 
     private BlockingQueue<Pedido> colaPedidos;
+    private MetricasSistema metricas;
     private Random random = new Random();
     private int contadorPedidos = 1;
 
@@ -17,8 +18,9 @@ public class ProductorPedidosVariable implements Runnable {
             "Empanada", "Jugo", "Pan con pollo", "Hamburguesa"
     };
 
-    public ProductorPedidosVariable(BlockingQueue<Pedido> colaPedidos) {
+    public ProductorPedidosVariable(BlockingQueue<Pedido> colaPedidos, MetricasSistema metricas) {
         this.colaPedidos = colaPedidos;
+        this.metricas = metricas;
     }
 
     @Override
@@ -32,6 +34,10 @@ public class ProductorPedidosVariable implements Runnable {
                 Pedido pedido = new Pedido(contadorPedidos, cliente, producto);
                 colaPedidos.put(pedido);
 
+                // Se cuenta como "generado" apenas entra a la cola,
+                // sin importar si un consumidor ya lo procesó o no
+                metricas.incrementarPedidosGenerados();
+
                 System.out.println("Pedido variable "
                         + contadorPedidos
                         + " registrado: "
@@ -41,7 +47,9 @@ public class ProductorPedidosVariable implements Runnable {
 
                 contadorPedidos++;
 
-                Thread.sleep(1500);
+                // Generación acelerada (300 ms) para que el productor
+                // supere la capacidad de los consumidores y la cola crezca
+                Thread.sleep(300);
             }
 
         } catch (InterruptedException e) {
